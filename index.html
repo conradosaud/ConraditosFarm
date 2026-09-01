@@ -20,10 +20,10 @@
     <div class="deck" >
 
         <div class="card" >
-            <img src="https://placehold.co/100x100" />
-            <h2 id="nomePlanta" > Nome </h2>
-            <p id="tempoPlanta" > Tempo restante </p>
-            <button> Colher </button>
+            <img id="imagemPlanta" src="./terreno.png" />
+            <h2 id="nomePlanta" > Terreno vazio </h2>
+            <p id="tempoPlanta" > Plante algo... </p>
+            <button onclick="colher()" > Colher </button>
             <hr/>
             <p>Compra de sementes:</p>
             <button onclick="comprar(camomila)" >Camomila</button>
@@ -89,24 +89,50 @@
         timer()
 
         let plantaComprada = null
+        let metadeTempo = 0
 
         // Objeto das plantas
         let camomila = {
             nome: "Camomila",
             custo: 75,
             recompensa: 300,
-            tempo: 10
+            tempo: 10,
+            imagem1: "./planta1.png",
+            imagem2: "./planta2.png",
+            imagem3: "./planta3.png"
         }
         let boldo = {
             nome: "Boldo",
             custo: 250,
             recompensa: 825,
-            tempo: 35
+            tempo: 35,
+            imagem1: "./planta1.png",
+            imagem2: "./planta2.png",
+            imagem3: "./planta3.png"
         }
 
         function addDinheiro(valor){
             dinheiro += valor
             document.getElementById("textoDinheiro").innerHTML = dinheiro
+        }
+
+        function colher(){
+
+            if(plantaComprada == null){
+                alert("Não há plantas para colher...")
+                return
+            }
+
+            if(plantaComprada.tempo <= 0){
+                addDinheiro(plantaComprada.recompensa)
+                plantaComprada = null
+                document.getElementById("nomePlanta").innerHTML = "Terreno vazio"                
+                document.getElementById("tempoPlanta").innerHTML = "Plante algo..."
+                document.getElementById("imagemPlanta").src = "./terreno.png"
+            }else{
+                alert("Você deve aguardar a planta crescer...")
+            }
+
         }
 
         function comprar(planta){
@@ -124,22 +150,41 @@
             addDinheiro(-planta.custo)
 
             plantaComprada = structuredClone(planta) // deep clone
+            metadeTempo = plantaComprada.tempo / 2
 
             document.getElementById("nomePlanta").innerHTML = planta.nome                
             document.getElementById("tempoPlanta").innerHTML = planta.tempo
+            document.getElementById("imagemPlanta").src = planta.imagem1
         }
 
         function atualizarPlantacao(){
             
+            if(plantaComprada == null){
+                return
+            }
+
+            if(plantaComprada.tempo <= 0){
+                document.getElementById("tempoPlanta").innerHTML = "Pronto para colher!"
+                document.getElementById("imagemPlanta").src = plantaComprada.imagem3
+                return
+            }
+
+            plantaComprada.tempo -= 1
+            document.getElementById("tempoPlanta").innerHTML = plantaComprada.tempo
+
+            if(plantaComprada.tempo <= metadeTempo){
+                document.getElementById("imagemPlanta").src = plantaComprada.imagem2
+            }
+
+
         }
 
         function timer(){
 
             setTimeout(() => {
                 atualizarPlantacao()
-                console.log("Oi")
                 timer() // looping infinito
-            }, 1000);
+            }, 1000 );
 
         }
 
